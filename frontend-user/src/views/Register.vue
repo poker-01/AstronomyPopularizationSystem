@@ -245,7 +245,7 @@ export default {
   width: 100%;
 }
 
-.custom-input :deep(.el-input__inner) {
+  .custom-input :deep(.el-input__inner) {
   background: rgba(255, 255, 255, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
