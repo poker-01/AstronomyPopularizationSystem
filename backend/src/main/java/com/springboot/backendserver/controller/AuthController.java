@@ -1,5 +1,8 @@
 package com.springboot.backendserver.controller;
 
+import com.springboot.backendserver.common.ApiResponse;
+import com.springboot.backendserver.common.BusinessException;
+import com.springboot.backendserver.dto.UserProfileDto;
 import com.springboot.backendserver.entity.User;
 import com.springboot.backendserver.service.AuthService;
 import org.springframework.http.HttpStatus;
@@ -19,24 +22,37 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
+    public ResponseEntity<ApiResponse<UserProfileDto>> register(@RequestBody Map<String, String> body) {
         String username = body.get("username");
         String password = body.get("password");
         try {
-            User u = authService.register(username, password);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", u.getId(), "username", u.getUsername()));
+            User user = authService.register(username, password);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.ok(UserProfileDto.from(user)));
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
+            return ResponseEntity.badRequest().body(ApiResponse.fail(400, ex.getMessage()));
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> login(@RequestBody Map<String, String> body) {
         String username = body.get("username");
         String password = body.get("password");
-        return authService.login(username, password)
-                .map(u -> ResponseEntity.ok(Map.of("token", u.getToken(), "username", u.getUsername(), "role", u.getRole())))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "invalid credentials")));
+        try {
+            return authService.login(username, password)
+                    .map(user -> {
+                        Map<String, Object> payload = Map.of(
+                                "token", user.getToken(),
+                                "username", user.getUsername(),
+                                "role", user.getRole(),
+                                "nickname", user.getNickname() != null ? user.getNickname() : user.getUsername()
+                        );
+                        return ResponseEntity.ok(ApiResponse.ok(payload));
+                    })
+                    .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body(ApiResponse.fail(401, "用户名或密码错误")));
+        } catch (BusinessException ex) {
+            return ResponseEntity.badRequest().body(ApiResponse.fail(ex.getCode(), ex.getMessage()));
+        }
     }
-
 }

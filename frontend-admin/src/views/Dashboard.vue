@@ -60,17 +60,20 @@
 <script>
 import api from '../services/api'
 import { clearToken, getToken } from '../services/auth'
+import { fetchStats } from '../services/users'
 import { ref, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
 export default {
   name: 'AdminDashboardView',
   setup() {
-    const username = ref('')
+    const router = useRouter()
+    const username = ref(localStorage.getItem('admin_auth_username') || '')
     const starsBg = ref(null)
     
     const stats = ref([
-      { id: 1, icon: '👥', title: '用户总数', value: '1,234', label: '注册用户' },
+      { id: 1, icon: '👥', title: '用户总数', value: '-', label: '正常用户' },
       { id: 2, icon: '📊', title: '今日访问', value: '567', label: '页面浏览量' },
       { id: 3, icon: '⭐', title: '活跃用户', value: '89', label: '在线用户' },
       { id: 4, icon: '📝', title: '内容数量', value: '456', label: '文章/视频' }
@@ -78,7 +81,7 @@ export default {
     
     const quickActions = ref([
       { id: 1, icon: '👤', title: '用户管理', description: '管理用户账户和权限', buttonText: '管理用户' },
-      { id: 2, icon: '📚', title: '内容管理', description: '编辑和发布天文内容', buttonText: '管理内容' },
+      { id: 2, icon: '📚', title: '内容管理', description: '编辑和发布天文科普文章', buttonText: '管理内容' },
       { id: 3, icon: '📈', title: '数据统计', description: '查看系统使用数据', buttonText: '查看统计' },
       { id: 4, icon: '⚙️', title: '系统设置', description: '配置系统参数', buttonText: '系统设置' }
     ])
@@ -113,18 +116,28 @@ export default {
         const token = getToken()
         if (!token) return
         const res = await api.get('/api/home')
-        if (res.data.role === 'ADMIN') username.value = res.data.username
+        const payload = res.data?.data ?? res.data
+        if (payload.role === 'ADMIN') username.value = payload.username
+        const statData = await fetchStats()
+        stats.value[0].value = String(statData.userCount ?? 0)
       } catch (err) {
         console.warn(err)
       }
     }
 
     const handleAction = (actionId) => {
-      ElMessage.info(`执行操作: ${actionId}`)
-      // 这里可以添加具体的操作逻辑
+      if (actionId === 1) {
+        router.push('/users')
+        return
+      }
+      if (actionId === 2) {
+        router.push('/content')
+        return
+      }
+      ElMessage.info('功能开发中')
     }
 
-    const goLogin = () => { window.location.href = '/login' }
+    const goLogin = () => { router.push('/login') }
     const logout = () => { clearToken(); username.value = '' }
 
     onMounted(() => {

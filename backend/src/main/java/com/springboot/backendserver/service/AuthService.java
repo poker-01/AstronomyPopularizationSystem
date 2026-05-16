@@ -1,8 +1,12 @@
 package com.springboot.backendserver.service;
 
+import com.springboot.backendserver.common.BusinessException;
 import com.springboot.backendserver.entity.User;
+import com.springboot.backendserver.entity.UserStatus;
 import com.springboot.backendserver.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -17,32 +21,59 @@ public class AuthService {
     }
 
     public User register(String username, String password) throws IllegalArgumentException {
-        if (username == null || password == null) {
+        if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
             throw new IllegalArgumentException("username and password required");
         }
-        if (userRepository.findByUsername(username).isPresent()) {
+        if (password.length() < 4) {
+            throw new IllegalArgumentException("password must be at least 4 characters");
+        }
+        if (userRepository.existsByUsername(username.trim())) {
             throw new IllegalArgumentException("username already exists");
         }
-        User u = new User();
-        u.setUsername(username);
-        u.setPassword(password); // plaintext as requested
-        u.setRole("USER");
-        return userRepository.save(u);
+
+        User user = new User();
+        user.setUsername(username.trim());
+        user.setPassword(password);
+        user.setRole("USER");
+        user.setStatus(UserStatus.ACTIVE);
+        user.setDeleted(false);
+        user.setNickname(username.trim());
+        return userRepository.save(user);
     }
 
+    @Transactional
     public Optional<User> login(String username, String password) {
-        Optional<User> ou = userRepository.findByUsername(username);
-        if (ou.isEmpty()) return Optional.empty();
-        User u = ou.get();
-        if (!u.getPassword().equals(password)) return Optional.empty();
+        if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
+            return Optional.empty();
+        }
+
+        Optional<User> userOpt = userRepository.findByUsername(username.trim());
+        if (userOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        User user = userOpt.get();
+        if (Boolean.TRUE.equals(user.getDeleted())) {
+            return Optional.empty();
+        }
+        if (user.getStatus() == UserStatus.DISABLED) {
+            throw BusinessException.badRequest("账户已被禁用，请联系管理员");
+        }
+        if (!user.getPassword().equals(password)) {
+            return Optional.empty();
+        }
+
         String token = UUID.randomUUID().toString();
-        u.setToken(token);
-        userRepository.save(u);
-        return Optional.of(u);
+        user.setToken(token);
+        userRepository.save(user);
+        return Optional.of(user);
     }
 
     public Optional<User> findByToken(String token) {
-        if (token == null) return Optional.empty();
-        return userRepository.findByToken(token);
+        if (!StringUtils.hasText(token)) {
+            return Optional.empty();
+        }
+        return userRepository.findByToken(token.trim())
+                .filter(user -> !Boolean.TRUE.equals(user.getDeleted()));
     }
 }
