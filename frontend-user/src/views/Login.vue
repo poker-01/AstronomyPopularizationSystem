@@ -65,14 +65,15 @@
 
 <script>
 import { reactive, ref, onMounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
-import { login, saveToken } from '../services/auth'
+import { useRouter, useRoute } from 'vue-router'
+import { login, saveToken, saveUserInfo } from '../services/auth'
 import { ElMessage } from 'element-plus'
 
 export default {
   name: 'LoginView',
   setup() {
     const router = useRouter()
+    const route = useRoute()
     const form = reactive({ username: '', password: '' })
     const loading = ref(false)
     const starsBg = ref(null)
@@ -112,10 +113,11 @@ export default {
       try {
         const data = await login(form.username, form.password)
         saveToken(data.token)
+        saveUserInfo(data)
         ElMessage.success('登录成功')
-        router.push('/')
+        router.push(route.query.redirect || '/')
       } catch (err) {
-        ElMessage.error(err.response?.data?.error || '登录失败')
+        ElMessage.error(err.response?.data?.message || err.message || '登录失败')
       } finally {
         loading.value = false
       }

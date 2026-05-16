@@ -1,0 +1,121 @@
+:root {
+  --space-black: #030014;
+  --space-deep: #0a0e27;
+  --space-blue: #0d1b3d;
+  --space-purple: #1a0a2e;
+  --accent-violet: #7b68ee;
+  --accent-indigo: #4f46e5;
+  --accent-cyan: #22d3ee;
+  --text-primary: #f0f0ff;
+  --text-muted: #9ca3c7;
+  --glass-bg: rgba(12, 16, 48, 0.72);
+  --glass-border: rgba(123, 104, 238, 0.28);
+  --gradient-hero: linear-gradient(135deg, #030014 0%, #0a0e27 35%, #1a0a2e 70%, #0d1b3d 100%);
+  --font-display: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-display);
+  background: var(--space-black);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+.site-main {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 72px);
+}
+
+.section-title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  background: linear-gradient(90deg, #fff 0%, #c4b5fd 50%, #7b68ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  color: var(--text-muted);
+  margin: 0 0 2rem;
+  max-width: 640px;
+  line-height: 1.6;
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(123, 104, 238, 0.55);
+  box-shadow: 0 12px 40px rgba(79, 70, 229, 0.2);
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+  border: none;
+  color: #fff;
+  padding: 0.65rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  padding: 0.65rem 1.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.markdown-body h2 {
+  margin-top: 1.5rem;
+  color: #e0e7ff;
+}
+
+.markdown-body p,
+.markdown-body li {
+  line-height: 1.8;
+  color: #c7d2fe;
+}
+
+.markdown-body strong {
+  color: #fff;
+}

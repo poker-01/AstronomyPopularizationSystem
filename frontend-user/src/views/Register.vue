@@ -66,7 +66,7 @@
 <script>
 import { reactive, ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { register, login, saveToken } from '../services/auth'
+import { register, login, saveToken, saveUserInfo } from '../services/auth'
 import { ElMessage } from 'element-plus'
 
 export default {
@@ -108,8 +108,8 @@ export default {
         return
       }
       
-      if (form.password.length < 6) {
-        ElMessage.warning('密码长度至少6位')
+      if (form.password.length < 4) {
+        ElMessage.warning('密码长度至少4位')
         return
       }
       
@@ -119,10 +119,11 @@ export default {
         // 自动登录
         const data = await login(form.username, form.password)
         saveToken(data.token)
+        saveUserInfo(data)
         ElMessage.success('注册并登录成功')
         router.push('/')
       } catch (err) {
-        ElMessage.error(err.response?.data?.error || '注册失败')
+        ElMessage.error(err.response?.data?.message || err.message || '注册失败')
       } finally {
         loading.value = false
       }

@@ -1,548 +1,301 @@
-  <template>
+<template>
   <div>
-    <!-- 视频背景区域 -->
-    <div class="video-container">
-      <video 
-        autoplay 
-        muted 
-        loop 
-        playsinline
-        webkit-playsinline
-        preload="auto"
-        :src="videoSrc"
-        class="bg-video"
-      >
-        <source :src="videoSrc" type="video/mp4">
-      </video>
-      
-      <!-- Logo -->
-      <div class="logo">🌌</div>
-      
-      <!-- 导航栏 -->
-      <nav class="navbar">
-        <ul>
-          <li><a href="#">首页</a></li>
-          <li>
-            <a href="#">天体展示</a>
-            <div class="dropdown">
-              <ul>
-                <li><a href="#planets">行星</a></li>
-                <li><a href="#">恒星</a></li>
-                <li><a href="#">星系</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <a href="#">论坛</a>
-            <div class="dropdown">
-              <ul>
-                <li><a href="#">讨论区</a></li>
-                <li><a href="#">问答</a></li>
-                <li><a href="#">精华帖</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <a href="#">测一测</a>
-            <div class="dropdown">
-              <ul>
-                <li><a href="#">天文知识测验</a></li>
-                <li><a href="#">星座配对</a></li>
-                <li><a href="#">宇宙探索</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <a href="#">订阅</a>
-            <div class="dropdown">
-              <ul>
-                <li><a href="#">天文资讯</a></li>
-                <li><a href="#">观测提醒</a></li>
-                <li><a href="#">会员服务</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <a href="#">个人中心</a>
-            <div class="dropdown">
-              <ul>
-                <li><a href="#">我的收藏</a></li>
-                <li><a href="#">浏览记录</a></li>
-                <li><a href="#">设置</a></li>
-              </ul>
-            </div>
-          </li>
-          <li>
-            <el-button v-if="!username" class="nav-login-btn" @click="goLogin">登录</el-button>
-            <div v-else class="nav-user">
-              <span class="nav-username">{{ username }}</span>
-              <el-button class="nav-logout-btn" @click="logout">退出</el-button>
-            </div>
-          </li>
-        </ul>
-      </nav>
-      
-      <!-- 主标题内容 -->
-      <div class="header-content">
-        <h1>Solar System</h1>
-        <p>{{ welcome }}</p>
+    <section class="hero">
+      <div class="hero-bg" v-if="apodImage" :style="{ backgroundImage: `url(${apodImage})` }"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content page-container">
+        <p class="hero-tag">NASA Astronomy Picture of the Day</p>
+        <h1 class="hero-title">{{ apodTitle }}</h1>
+        <p class="hero-desc">{{ apodExcerpt }}</p>
+        <div class="hero-actions">
+          <router-link to="/planets" class="btn-primary">探索太阳系</router-link>
+          <router-link to="/explore" class="btn-ghost">人类航天史</router-link>
+        </div>
+        <p v-if="apodDate" class="hero-meta">{{ apodDate }} · {{ apodCopyright }}</p>
       </div>
-      
-      <!-- 滚动提示 -->
-      <div class="scroll-down"><i class="el-icon-arrow-down"></i></div>
-    </div>
+    </section>
 
-    <!-- 太阳系介绍区域 -->
-    <div class="profile">
-      <section id="planets" class="content-section">
-        <h2>太阳系简介</h2>
-        <div class="profile-grid">
-          <div class="planet-card">
-            <h3>形成与演变</h3>
-            <p>约46亿年前，原始星云在引力作用下坍缩，中心形成原恒星（太阳），周围物质形成原行星盘并持续演化。</p>
+    <section class="page-container section">
+      <h2 class="section-title">科普精选</h2>
+      <p class="section-subtitle">深入理解宇宙——从太阳系形成到黑洞与观测实践</p>
+      <div v-loading="articlesLoading" class="article-grid">
+        <router-link
+          v-for="item in articles"
+          :key="item.id"
+          :to="`/articles/${item.slug}`"
+          class="glass-card article-card"
+        >
+          <div class="card-cover" :style="coverStyle(item.coverUrl)"></div>
+          <div class="card-body">
+            <span class="card-tag">{{ item.categoryName }}</span>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.summary }}</p>
           </div>
-          <div class="planet-card">
-            <h3>组成结构</h3>
-            <p>太阳系由太阳、8个行星、近500个卫星和大量小行星，以及一些矮行星和彗星组成。</p>
-          </div>
-          <div class="planet-card">
-            <h3>位置</h3>
-            <p>太阳系位于银河系的猎户旋臂边缘，距离银河系中心大约2.4-2.7万光年。相对稳定的星际环境有利于生命的诞生和演化。</p>
-          </div>
-        </div>
+        </router-link>
+      </div>
+      <div class="section-cta">
+        <router-link to="/articles" class="btn-primary">浏览全部文章</router-link>
+      </div>
+    </section>
 
-        <h2>太阳系行星</h2>
-        <p>我们的太阳系由八大行星组成，它们围绕太阳运行。</p>
-
-        <div class="planet-grid">
-          <div class="planet-card" v-for="item in planetCards" :key="item.name">
-            <h3>{{ item.name }}</h3>
-            <p>{{ item.text }}</p>
-          </div>
-        </div>
-      </section>
-    </div>
+    <section class="page-container section planets-preview">
+      <h2 class="section-title">八大行星</h2>
+      <p class="section-subtitle">行星影像来自 NASA Image and Video Library，科普数据由本站整理</p>
+      <div v-loading="planetsLoading" class="planet-orbit">
+        <router-link
+          v-for="p in planetsPreview"
+          :key="p.id"
+          :to="`/planets#${p.id}`"
+          class="planet-chip glass-card"
+        >
+          <img v-if="p.imageUrl" :src="p.imageUrl" :alt="p.name" loading="lazy" />
+          <span v-else class="planet-placeholder">{{ p.name[0] }}</span>
+          <span class="planet-name">{{ p.name }}</span>
+        </router-link>
+      </div>
+    </section>
   </div>
 </template>
 
 <script>
-import api from '../services/api'
-import { clearToken, getToken } from '../services/auth'
 import { ref, onMounted } from 'vue'
+import { fetchApod, fetchPlanets } from '../services/nasa'
+import { fetchArticles } from '../services/content'
 
 export default {
   name: 'HomeView',
   setup() {
-    const welcome = ref('一个关于太阳系的科普网站')
-    const username = ref('')
-    const videoSrc = ref(require('../assets/index/VID_20250526_203310.mp4'))
-    
-    // 行星数据
-    const planetCards = ref([
-      {
-        name: '水星',
-        text: '太阳系中最小的行星，也是离太阳最近的行星。表面温度变化极大，白天可达430°C，夜晚降至-180°C。'
-      },
-      {
-        name: '金星',
-        text: '太阳系中最热的行星，表面温度高达470°C。拥有浓厚的大气层，主要由二氧化碳组成。'
-      },
-      {
-        name: '地球',
-        text: '我们居住的星球，目前已知唯一有生命存在的行星。约71%的表面被水覆盖。'
-      },
-      {
-        name: '火星',
-        text: '被称为"红色星球"，表面富含氧化铁。拥有太阳系最高的火山和最大的峡谷。'
-      },
-      {
-        name: '木星',
-        text: '太阳系中最大的行星，质量是其他所有行星总和的2.5倍。拥有著名的大红斑风暴。'
-      },
-      {
-        name: '土星',
-        text: '以其壮观的环系统闻名，主要由冰和岩石颗粒组成。密度比水还低。'
-      },
-      {
-        name: '天王星',
-        text: '独特的侧向自转，看起来像是"躺着"绕太阳运行。大气中含有甲烷，呈现蓝色。'
-      },
-      {
-        name: '海王星',
-        text: '太阳系中风速最快的行星，可达2100km/h。1846年通过数学预测被发现。'
-      }
-    ])
+    const apodTitle = ref('探索宇宙')
+    const apodExcerpt = ref('加载 NASA 每日天文图…')
+    const apodImage = ref('')
+    const apodDate = ref('')
+    const apodCopyright = ref('')
+    const articles = ref([])
+    const articlesLoading = ref(true)
+    const planetsPreview = ref([])
+    const planetsLoading = ref(true)
 
-    const load = async () => {
+    const coverStyle = (url) => ({
+      backgroundImage: url ? `url(${url})` : 'linear-gradient(135deg, #1a0a2e, #0d1b3d)'
+    })
+
+    const loadApod = async () => {
       try {
-        const token = getToken()
-        if (!token) {
-          welcome.value = '一个关于太阳系的科普网站'
-          return
+        const data = await fetchApod()
+        apodTitle.value = data.title || '每日天文图'
+        apodDate.value = data.date || ''
+        apodCopyright.value = data.copyright || 'Image: NASA'
+        const explanation = data.explanation || ''
+        apodExcerpt.value = explanation.length > 180 ? explanation.slice(0, 180) + '…' : explanation
+        apodImage.value = data.url || data.hdurl || ''
+        if (data.media_type === 'video' && data.url) {
+          apodImage.value = 'https://www.nasa.gov/wp-content/uploads/2023/03/main_pillars_of_creation-m16-4029.jpg'
         }
-        const res = await api.get('/api/home')
-        username.value = res.data.username || ''
-        welcome.value = res.data.message || `欢迎回来，${username.value}！`
-      } catch (err) {
-        console.warn(err)
+      } catch {
+        apodTitle.value = '仰望星空'
+        apodExcerpt.value = '连接 NASA 数据源失败，您仍可浏览太阳系与科普文库。'
+        apodImage.value = 'https://www.nasa.gov/wp-content/uploads/2023/03/main_pillars_of_creation-m16-4029.jpg'
       }
     }
 
-    const goLogin = () => {
-      window.location.href = '/login'
+    const loadArticles = async () => {
+      articlesLoading.value = true
+      try {
+        const data = await fetchArticles({ page: 0, size: 3 })
+        articles.value = data.content || []
+      } finally {
+        articlesLoading.value = false
+      }
     }
 
-    const logout = () => {
-      clearToken()
-      username.value = ''
-      welcome.value = '一个关于太阳系的科普网站'
+    const loadPlanets = async () => {
+      planetsLoading.value = true
+      try {
+        const list = await fetchPlanets()
+        planetsPreview.value = (list || []).slice(0, 8)
+      } catch {
+        planetsPreview.value = []
+      } finally {
+        planetsLoading.value = false
+      }
     }
 
     onMounted(() => {
-      load()
+      loadApod()
+      loadArticles()
+      loadPlanets()
     })
 
-    return { welcome, username, videoSrc, planetCards, goLogin, logout }
+    return {
+      apodTitle,
+      apodExcerpt,
+      apodImage,
+      apodDate,
+      apodCopyright,
+      articles,
+      articlesLoading,
+      planetsPreview,
+      planetsLoading,
+      coverStyle
+    }
   }
 }
 </script>
 
 <style scoped>
-.video-container {
+.hero {
   position: relative;
-  height: 100vh;
-  width: 100%;
+  min-height: 72vh;
+  display: flex;
+  align-items: flex-end;
   overflow: hidden;
 }
 
-.video-container video {
+.hero-bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-  min-width: 100%;
-  min-height: 100%;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.45);
 }
 
-.bg-video {
-  display: block;
-  background: #000;
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #030014 10%, transparent 55%),
+    linear-gradient(to right, rgba(26, 10, 46, 0.7), transparent 60%);
 }
 
-.logo {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 100;
-  font-size: 32px;
-  color: white;
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 10px 15px;
-  border-radius: 50%;
-}
-
-.navbar {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
-  font-size: 40px;
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 10px;
-  padding-top: 2px;
-  padding-right: 20px;
-  border-radius: 30px;
-}
-
-.navbar ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-}
-
-.navbar li {
-  margin-left: 20px;
+.hero-content {
   position: relative;
-}
-
-.navbar a {
-  color: white;
-  text-decoration: none;
-  font-size: 20px;
-  transition: background-color 0.3s;
-  display: inline-block;
-  font-weight: bold;
-  padding: 5px 20px;
-}
-
-.navbar a:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-.dropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: rgba(255, 255, 255, 0.2);
-  width: 120px;
-  padding: 10px;
-  margin-top: 10px;
   z-index: 1;
+  padding-top: 4rem;
+  padding-bottom: 3rem;
 }
 
-.dropdown ul {
+.hero-tag {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  margin-bottom: 0.75rem;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  margin: 0 0 1rem;
+  max-width: 800px;
+  line-height: 1.15;
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  color: #c7d2fe;
+  max-width: 640px;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hero-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.section {
+  padding-top: 3rem;
+}
+
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.article-card {
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.card-cover {
+  height: 160px;
+  background-size: cover;
+  background-position: center;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-tag {
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.card-body h3 {
+  margin: 0.5rem 0;
+  font-size: 1.15rem;
+}
+
+.card-body p {
   margin: 0;
-  padding: 0;
-  list-style: none;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
-.dropdown li {
-  margin: 0;
-  padding: 0;
-  width: 100%;
+.section-cta {
+  margin-top: 2rem;
+  text-align: center;
 }
 
-.dropdown a {
-  padding: 10px 10px;
-  display: block;
-  color: white;
+.planet-orbit {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.planet-chip {
+  padding: 1rem;
+  text-align: center;
   text-decoration: none;
-  font-size: 19px;
-  transition: background-color 0.3s;
+  color: inherit;
 }
 
-.dropdown a:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-  text-decoration: none;
+.planet-chip img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
 }
 
-.navbar > ul > li::after {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  width: 100%;
-  height: 15px;
-  background: transparent;
-}
-
-.navbar > ul > li:hover > .dropdown {
-  display: block;
-}
-
-/* 导航栏按钮样式 */
-.nav-login-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  font-size: 16px;
-  padding: 5px 20px;
-  border-radius: 20px;
-  font-weight: bold;
-}
-
-.nav-login-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.nav-user {
-  display: flex;
+.planet-placeholder {
+  display: inline-flex;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.nav-username {
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.nav-logout-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  font-size: 14px;
-  padding: 5px 15px;
-  border-radius: 20px;
-}
-
-.nav-logout-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.header-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  width: 100%;
-}
-
-.header-content h1 {
-  font-size: 7rem;
-  margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.header-content p {
-  font-size: 1.8rem;
-  margin-top: 20px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.profile {
-  background: linear-gradient(to bottom, #000300, #004e92);
-  padding: 50px 20px;
-}
-
-.profile-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
-  gap: 40px;
-  margin-top: 50px;
-}
-
-.content-section {
-  max-width: 1700px;
-  margin: 0 auto;
-  padding: 40px 0;
-}
-
-.content-section h2 {
-  font-size: 3rem;
-  line-height: 200px;
-  margin-bottom: 30px;
-  text-align: center;
-}
-
-.content-section p {
-  font-size: 1.6rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.planet-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
-  gap: 30px;
-  margin-top: 50px;
-}
-
-.planet-card {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 20px;
-  backdrop-filter: blur(5px);
-  transition: transform 0.3s;
-}
-
-.planet-card:hover {
-  transform: translateY(-10px);
-}
-
-.planet-card h3 {
-  font-size: 2.2rem;
-  margin-top: 0;
-  color: #fff;
-}
-
-.scroll-down {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: white;
-  font-size: 2rem;
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateX(-50%) translateY(0);
-  }
-  50% {
-    transform: translateX(-50%) translateY(10px);
-  }
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .navbar {
-    right: 10px;
-    padding: 5px 10px;
-  }
-  
-  .navbar a {
-    font-size: 16px;
-    padding: 5px 10px;
-  }
-  
-  .logo {
-    font-size: 24px;
-    padding: 8px 12px;
-  }
-  
-  .header-content h1 {
-    font-size: 4rem;
-  }
-  
-  .header-content p {
-    font-size: 1.2rem;
-  }
-  
-  .content-section h2 {
-    font-size: 2rem;
-    line-height: 1.5;
-  }
-  
-  .content-section p {
-    font-size: 1.2rem;
-  }
-  
-  .planet-card h3 {
-    font-size: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .navbar {
-    position: relative;
-    top: auto;
-    right: auto;
-    margin-top: 70px;
-    border-radius: 15px;
-  }
-  
-  .navbar ul {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .navbar li {
-    margin-left: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .header-content h1 {
-    font-size: 3rem;
-  }
-  
-  .header-content p {
-    font-size: 1rem;
-  }
-  
-  .profile-grid,
-  .planet-grid {
-    grid-template-columns: 1fr;
-  }
+.planet-name {
+  display: block;
+  font-weight: 600;
 }
 </style>
