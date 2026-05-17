@@ -82,6 +82,9 @@ export default {
     const quickActions = ref([
       { id: 1, icon: '👤', title: '用户管理', description: '管理用户账户和权限', buttonText: '管理用户' },
       { id: 2, icon: '📚', title: '内容管理', description: '编辑和发布天文科普文章', buttonText: '管理内容' },
+      { id: 5, icon: '❓', title: '题库管理', description: '题目 CRUD 与 JSON 批量导入', buttonText: '管理题库' },
+      { id: 6, icon: '🧪', title: '测验套卷', description: '组卷并绑定题目', buttonText: '管理套卷' },
+      { id: 7, icon: '🏅', title: '成就徽章', description: '配置徽章规则与图标', buttonText: '管理徽章' },
       { id: 3, icon: '📈', title: '数据统计', description: '查看系统使用数据', buttonText: '查看统计' },
       { id: 4, icon: '⚙️', title: '系统设置', description: '配置系统参数', buttonText: '系统设置' }
     ])
@@ -132,6 +135,18 @@ export default {
       }
       if (actionId === 2) {
         router.push('/content')
+        return
+      }
+      if (actionId === 5) {
+        router.push('/questions')
+        return
+      }
+      if (actionId === 6) {
+        router.push('/quizzes')
+        return
+      }
+      if (actionId === 7) {
+        router.push('/badges')
         return
       }
       ElMessage.info('功能开发中')

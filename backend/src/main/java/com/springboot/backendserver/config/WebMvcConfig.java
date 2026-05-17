@@ -33,7 +33,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/api/home",
                         "/api/content/**",
                         "/api/nasa/**",
-                        "/api/exploration/**"
+                        "/api/exploration/**",
+                        "/api/quizzes",
+                        "/api/quizzes/*"
                 );
     }
 }

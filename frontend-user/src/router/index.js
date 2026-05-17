@@ -8,6 +8,9 @@ import ArticleDetail from '../views/ArticleDetail.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Profile from '../views/Profile.vue'
+import Quizzes from '../views/Quizzes.vue'
+import QuizPlay from '../views/QuizPlay.vue'
+import Achievements from '../views/Achievements.vue'
 import { getToken } from '../services/auth'
 
 const routes = [
@@ -19,7 +22,10 @@ const routes = [
       { path: 'planets', name: 'Planets', component: Planets },
       { path: 'explore', name: 'Explore', component: Explore },
       { path: 'articles', name: 'Articles', component: Articles },
-      { path: 'articles/:slug', name: 'ArticleDetail', component: ArticleDetail }
+      { path: 'articles/:slug', name: 'ArticleDetail', component: ArticleDetail },
+      { path: 'quizzes', name: 'Quizzes', component: Quizzes },
+      { path: 'quizzes/:id', name: 'QuizPlay', component: QuizPlay },
+      { path: 'achievements', name: 'Achievements', component: Achievements, meta: { requiresAuth: true } }
     ]
   },
   { path: '/login', name: 'Login', component: Login, meta: { guest: true } },

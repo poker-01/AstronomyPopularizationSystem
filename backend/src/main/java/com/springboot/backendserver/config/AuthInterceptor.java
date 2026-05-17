@@ -43,7 +43,8 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         String path = request.getRequestURI();
-        boolean requiresAuth = path.startsWith("/api/users") || path.startsWith("/api/admin");
+        boolean requiresAuth = path.startsWith("/api/admin")
+                || (path.startsWith("/api/users") && !isPublicUserProfile(request));
         if (requiresAuth && userOpt.isEmpty()) {
             writeError(response, 401, "未登录或登录已失效");
             return false;
@@ -63,6 +64,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         AuthContext.clear();
+    }
+
+    private boolean isPublicUserProfile(HttpServletRequest request) {
+        if (!"GET".equalsIgnoreCase(request.getMethod())) {
+            return false;
+        }
+        String path = request.getRequestURI();
+        return path.matches("/api/users/\\d+");
     }
 
     private void writeError(HttpServletResponse response, int code, String message) throws Exception {

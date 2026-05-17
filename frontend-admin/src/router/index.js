@@ -3,13 +3,19 @@ import AdminLogin from '../views/AdminLogin.vue'
 import Dashboard from '../views/Dashboard.vue'
 import UserList from '../views/UserList.vue'
 import ArticleList from '../views/ArticleList.vue'
+import QuestionList from '../views/QuestionList.vue'
+import QuizList from '../views/QuizList.vue'
+import BadgeList from '../views/BadgeList.vue'
 import { getToken } from '../services/auth'
 
 const routes = [
   { path: '/login', name: 'AdminLogin', component: AdminLogin, meta: { guest: true } },
   { path: '/', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/users', name: 'UserList', component: UserList, meta: { requiresAuth: true } },
-  { path: '/content', name: 'ArticleList', component: ArticleList, meta: { requiresAuth: true } }
+  { path: '/content', name: 'ArticleList', component: ArticleList, meta: { requiresAuth: true } },
+  { path: '/questions', name: 'QuestionList', component: QuestionList, meta: { requiresAuth: true } },
+  { path: '/quizzes', name: 'QuizList', component: QuizList, meta: { requiresAuth: true } },
+  { path: '/badges', name: 'BadgeList', component: BadgeList, meta: { requiresAuth: true } }
 ]
 
 const router = createRouter({
