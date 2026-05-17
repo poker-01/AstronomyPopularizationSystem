@@ -86,6 +86,7 @@ export default {
       { id: 5, icon: '❓', title: '题库管理', description: '题目 CRUD 与 JSON 批量导入', buttonText: '管理题库' },
       { id: 6, icon: '🧪', title: '测验套卷', description: '组卷并绑定题目', buttonText: '管理套卷' },
       { id: 7, icon: '🏅', title: '成就徽章', description: '配置徽章规则与图标', buttonText: '管理徽章' },
+      { id: 9, icon: '📅', title: '天文日历', description: '天象事件 CRUD 与公开数据导入', buttonText: '管理日历' },
       { id: 3, icon: '📈', title: '数据统计', description: '查看系统使用数据', buttonText: '查看统计' },
       { id: 4, icon: '⚙️', title: '系统设置', description: '配置系统参数', buttonText: '系统设置' }
     ])
@@ -152,6 +153,10 @@ export default {
       }
       if (actionId === 7) {
         router.push('/badges')
+        return
+      }
+      if (actionId === 9) {
+        router.push('/calendar')
         return
       }
       ElMessage.info('功能开发中')

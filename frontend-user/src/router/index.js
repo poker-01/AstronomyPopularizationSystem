@@ -15,6 +15,7 @@ import Forum from '../views/Forum.vue'
 import PostDetail from '../views/PostDetail.vue'
 import PostCreate from '../views/PostCreate.vue'
 import UserProfile from '../views/UserProfile.vue'
+import Calendar from '../views/Calendar.vue'
 import { getToken } from '../services/auth'
 
 const routes = [
@@ -25,6 +26,8 @@ const routes = [
       { path: '', name: 'Home', component: Home },
       { path: 'planets', name: 'Planets', component: Planets },
       { path: 'explore', name: 'Explore', component: Explore },
+      { path: 'calendar', name: 'Calendar', component: Calendar },
+      { path: 'calendar/reminders', name: 'CalendarReminders', component: Calendar, meta: { requiresAuth: true } },
       { path: 'articles', name: 'Articles', component: Articles },
       { path: 'articles/:slug', name: 'ArticleDetail', component: ArticleDetail },
       { path: 'quizzes', name: 'Quizzes', component: Quizzes },

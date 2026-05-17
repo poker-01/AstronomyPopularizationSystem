@@ -15,6 +15,42 @@
       </div>
     </section>
 
+    <section v-if="upcomingToday.length || upcomingWeek.length" class="page-container section upcoming-section">
+      <h2 class="section-title">天象速览</h2>
+      <p class="section-subtitle">今日与本周值得关注的天文事件</p>
+      <div v-if="upcomingToday.length" class="upcoming-block">
+        <h3 class="upcoming-label today-label">今日</h3>
+        <div class="upcoming-list">
+          <router-link
+            v-for="ev in upcomingToday"
+            :key="'t-' + ev.id"
+            to="/calendar"
+            class="upcoming-chip glass-card"
+          >
+            <span class="chip-type">{{ ev.eventTypeLabel }}</span>
+            <span class="chip-title">{{ ev.title }}</span>
+          </router-link>
+        </div>
+      </div>
+      <div v-if="upcomingWeek.length" class="upcoming-block">
+        <h3 class="upcoming-label">本周</h3>
+        <div class="upcoming-list">
+          <router-link
+            v-for="ev in upcomingWeekFiltered"
+            :key="'w-' + ev.id"
+            to="/calendar"
+            class="upcoming-chip glass-card"
+          >
+            <span class="chip-type">{{ ev.eventTypeLabel }}</span>
+            <span class="chip-title">{{ ev.title }}</span>
+          </router-link>
+        </div>
+      </div>
+      <div class="section-cta">
+        <router-link to="/calendar" class="btn-ghost">打开天文日历</router-link>
+      </div>
+    </section>
+
     <section class="page-container section">
       <h2 class="section-title">科普精选</h2>
       <p class="section-subtitle">深入理解宇宙——从太阳系形成到黑洞与观测实践</p>
@@ -58,9 +94,10 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { fetchApod, fetchPlanets } from '../services/nasa'
 import { fetchArticles } from '../services/content'
+import { fetchUpcoming } from '../services/calendar'
 
 export default {
   name: 'HomeView',
@@ -74,6 +111,13 @@ export default {
     const articlesLoading = ref(true)
     const planetsPreview = ref([])
     const planetsLoading = ref(true)
+    const upcomingToday = ref([])
+    const upcomingWeek = ref([])
+
+    const upcomingWeekFiltered = computed(() => {
+      const todayIds = new Set(upcomingToday.value.map(e => e.id))
+      return upcomingWeek.value.filter(e => !todayIds.has(e.id))
+    })
 
     const coverStyle = (url) => ({
       backgroundImage: url ? `url(${url})` : 'linear-gradient(135deg, #1a0a2e, #0d1b3d)'
@@ -120,10 +164,22 @@ export default {
       }
     }
 
+    const loadUpcoming = async () => {
+      try {
+        const data = await fetchUpcoming()
+        upcomingToday.value = data.today || []
+        upcomingWeek.value = data.thisWeek || []
+      } catch {
+        upcomingToday.value = []
+        upcomingWeek.value = []
+      }
+    }
+
     onMounted(() => {
       loadApod()
       loadArticles()
       loadPlanets()
+      loadUpcoming()
     })
 
     return {
@@ -136,6 +192,9 @@ export default {
       articlesLoading,
       planetsPreview,
       planetsLoading,
+      upcomingToday,
+      upcomingWeek,
+      upcomingWeekFiltered,
       coverStyle
     }
   }
@@ -297,5 +356,50 @@ export default {
 .planet-name {
   display: block;
   font-weight: 600;
+}
+
+.upcoming-section {
+  padding-top: 2rem;
+}
+
+.upcoming-block {
+  margin-bottom: 1.5rem;
+}
+
+.upcoming-label {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+}
+
+.today-label {
+  color: var(--accent-cyan);
+}
+
+.upcoming-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.upcoming-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  min-width: 180px;
+}
+
+.chip-type {
+  font-size: 0.75rem;
+  color: var(--accent-violet);
+}
+
+.chip-title {
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 </style>
