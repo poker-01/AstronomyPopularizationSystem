@@ -16,6 +16,7 @@
         <router-link to="/articles" @click="menuOpen = false">科普文库</router-link>
         <router-link to="/explore" @click="menuOpen = false">探索历程</router-link>
         <router-link to="/quizzes" @click="menuOpen = false">趣味测验</router-link>
+        <router-link to="/forum" @click="menuOpen = false">社区论坛</router-link>
         <router-link v-if="loggedIn" to="/achievements" @click="menuOpen = false">我的成就</router-link>
         <span class="nav-divider"></span>
         <router-link v-if="loggedIn" to="/profile" class="nav-profile" @click="menuOpen = false">

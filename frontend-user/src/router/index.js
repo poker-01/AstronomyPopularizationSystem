@@ -11,6 +11,10 @@ import Profile from '../views/Profile.vue'
 import Quizzes from '../views/Quizzes.vue'
 import QuizPlay from '../views/QuizPlay.vue'
 import Achievements from '../views/Achievements.vue'
+import Forum from '../views/Forum.vue'
+import PostDetail from '../views/PostDetail.vue'
+import PostCreate from '../views/PostCreate.vue'
+import UserProfile from '../views/UserProfile.vue'
 import { getToken } from '../services/auth'
 
 const routes = [
@@ -25,7 +29,11 @@ const routes = [
       { path: 'articles/:slug', name: 'ArticleDetail', component: ArticleDetail },
       { path: 'quizzes', name: 'Quizzes', component: Quizzes },
       { path: 'quizzes/:id', name: 'QuizPlay', component: QuizPlay },
-      { path: 'achievements', name: 'Achievements', component: Achievements, meta: { requiresAuth: true } }
+      { path: 'achievements', name: 'Achievements', component: Achievements, meta: { requiresAuth: true } },
+      { path: 'forum', name: 'Forum', component: Forum },
+      { path: 'forum/new', name: 'PostCreate', component: PostCreate, meta: { requiresAuth: true } },
+      { path: 'forum/:id', name: 'PostDetail', component: PostDetail },
+      { path: 'users/:id', name: 'UserProfile', component: UserProfile }
     ]
   },
   { path: '/login', name: 'Login', component: Login, meta: { guest: true } },

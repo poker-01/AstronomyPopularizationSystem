@@ -82,6 +82,7 @@ export default {
     const quickActions = ref([
       { id: 1, icon: '👤', title: '用户管理', description: '管理用户账户和权限', buttonText: '管理用户' },
       { id: 2, icon: '📚', title: '内容管理', description: '编辑和发布天文科普文章', buttonText: '管理内容' },
+      { id: 8, icon: '🛡️', title: '内容审核', description: '审核论坛帖子与评论', buttonText: '进入审核' },
       { id: 5, icon: '❓', title: '题库管理', description: '题目 CRUD 与 JSON 批量导入', buttonText: '管理题库' },
       { id: 6, icon: '🧪', title: '测验套卷', description: '组卷并绑定题目', buttonText: '管理套卷' },
       { id: 7, icon: '🏅', title: '成就徽章', description: '配置徽章规则与图标', buttonText: '管理徽章' },
@@ -135,6 +136,10 @@ export default {
       }
       if (actionId === 2) {
         router.push('/content')
+        return
+      }
+      if (actionId === 8) {
+        router.push('/moderation')
         return
       }
       if (actionId === 5) {

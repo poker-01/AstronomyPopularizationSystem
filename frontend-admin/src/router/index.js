@@ -6,6 +6,7 @@ import ArticleList from '../views/ArticleList.vue'
 import QuestionList from '../views/QuestionList.vue'
 import QuizList from '../views/QuizList.vue'
 import BadgeList from '../views/BadgeList.vue'
+import ModerationList from '../views/ModerationList.vue'
 import { getToken } from '../services/auth'
 
 const routes = [
@@ -15,7 +16,8 @@ const routes = [
   { path: '/content', name: 'ArticleList', component: ArticleList, meta: { requiresAuth: true } },
   { path: '/questions', name: 'QuestionList', component: QuestionList, meta: { requiresAuth: true } },
   { path: '/quizzes', name: 'QuizList', component: QuizList, meta: { requiresAuth: true } },
-  { path: '/badges', name: 'BadgeList', component: BadgeList, meta: { requiresAuth: true } }
+  { path: '/badges', name: 'BadgeList', component: BadgeList, meta: { requiresAuth: true } },
+  { path: '/moderation', name: 'ModerationList', component: ModerationList, meta: { requiresAuth: true } }
 ]
 
 const router = createRouter({
